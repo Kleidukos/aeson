@@ -8,11 +8,11 @@
 #
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.11.20210111
+# version: 0.11.20210214
 #
-# REGENDATA ("0.11.20210111",["github","-o",".github/workflows/haskell-ci-bench.yml","--config=cabal.bench.haskell-ci","--project","cabal.bench.project"])
+# REGENDATA ("0.11.20210214",["github","-o",".github/workflows/haskell-ci-bench.yml","--config=cabal.bench.haskell-ci","--project","cabal.bench.project"])
 #
-name: Haskell-CI Bench
+name: Haskell-CI
 on:
   push:
     branches:
@@ -120,11 +120,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: source
+      - name: initial cabal.project for sdist
+        run: |
+          touch cabal.project
+          echo "packages: $GITHUB_WORKSPACE/source/benchmarks" >> cabal.project
+          echo "packages: $GITHUB_WORKSPACE/source/criterion-compare-txt" >> cabal.project
+          cat cabal.project
       - name: sdist
         run: |
           mkdir -p sdist
-          cd source || false
-          cp cabal.bench.project cabal.project
           $CABAL sdist all --output-dir $GITHUB_WORKSPACE/sdist
       - name: unpack
         run: |
